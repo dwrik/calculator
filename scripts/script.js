@@ -1,8 +1,24 @@
 let isFloat = false;
 
 const display = document.querySelector('#display');
+
 const numbers = [ ...document.querySelectorAll('.number') ];
 numbers.forEach(number => number.addEventListener('click', handleOperand));
+
+const clear = document.querySelector('#clr');
+clear.addEventListener('click', deleteLast);
+
+const allClear = document.querySelector('#acl');
+allClear.addEventListener('click', deleteAll);
+
+
+function deleteLast(event) {
+    display.innerHTML = display.innerHTML.slice(0, display.innerHTML.length - 1);
+}
+
+function deleteAll(event) {
+    display.innerHTML = '';
+}
 
 function handleOperand(event) {
     let num = event.target.innerHTML;
@@ -12,7 +28,6 @@ function handleOperand(event) {
     }
     display.innerHTML += num;
 }
-
 
 // rounds to 3 places
 function round(num) {
