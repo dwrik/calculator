@@ -1,3 +1,19 @@
+let isFloat = false;
+
+const display = document.querySelector('#display');
+const numbers = [ ...document.querySelectorAll('.number') ];
+numbers.forEach(number => number.addEventListener('click', handleOperand));
+
+function handleOperand(event) {
+    let num = event.target.innerHTML;
+    if (isFloat && num === '.') return;
+    if (num == '.') {
+        isFloat = true;
+    }
+    display.innerHTML += num;
+}
+
+
 // rounds to 3 places
 function round(num) {
     return Math.floor(num * 1000) / 1000;
