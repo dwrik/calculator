@@ -28,8 +28,21 @@ div {
 burlywood, darkkhaki, rosybrown, tan
 */
 
+@media (max-width: 470px) {
+    #body {
+        width: 300px;
+    }
+}
+
+@media (max-width: 320px) {
+    #body {
+        width: 200px;
+    }
+}
+
 #body {
     height: 80%;
+    width: 400px;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -56,7 +69,7 @@ burlywood, darkkhaki, rosybrown, tan
 #buttons-container {
     gap: 15px;
     height: 80%;
-    width: 400px;
+    width: 100%;
     display: grid;
     justify-content: center;
     justify-items: center;
