@@ -7,23 +7,53 @@ let isLastInputOperation = false;
 
 // display node
 const display = document.querySelector('#display');
+display.innerHTML = '';
 
 // event listeners
+const operations = [ ...document.querySelectorAll('.operation') ];
+operations.forEach(operation => operation.addEventListener('click', handleOperator));
 
 const numbers = [ ...document.querySelectorAll('.number') ];
 numbers.forEach(number => number.addEventListener('click', handleOperand));
 
-const operations = [ ...document.querySelectorAll('.operation') ];
-operations.forEach(operation => operation.addEventListener('click', handleOperator));
-
-const equal = document.querySelector('#eq');
+const equal = document.querySelector('#key-eq');
 equal.addEventListener('click', evaluate);
 
-const clear = document.querySelector('#clr');
+const clear = document.querySelector('#key-clr');
 clear.addEventListener('click', deleteLast);
 
-const allClear = document.querySelector('#acl');
+const allClear = document.querySelector('#key-acl');
 allClear.addEventListener('click', deleteAll);
+
+window.addEventListener('keypress', handleKey);
+
+
+// handle keypresses
+function handleKey(event) {
+    const key = event.key;
+    let keyID = '';
+
+    switch(key) {
+        case '+':     keyID = 'add'; break;
+        case '-':     keyID = 'sub'; break;
+        case '*':     keyID = 'mul'; break;
+        case '/':     keyID = 'div'; break;
+        case '.':     keyID = 'dot'; break;
+        case 'c':     keyID = 'clr'; break;
+        case 'a':     keyID = 'acl'; break;
+        case '0':     keyID = 'zr';  break;
+        case '=':
+        case 'Enter': keyID = 'eq';  break;
+        default:      keyID = key;
+    }
+
+    try {
+        const keyElement = document.querySelector(`#key-${keyID}`);
+        keyElement.click();
+    } catch (error) {
+        return;
+    }
+}
 
 // clear all
 function deleteAll(event) {
@@ -38,14 +68,17 @@ function deleteAll(event) {
 // delete last char
 function deleteLast(event) {
     if (isLastInputOperation) operation = '';
+
     let operand = display.innerHTML;
     if (operand.length === 1 || (operand.length == 2 && operand.charAt(0) == '-')) {
         deleteAll();
         return;
     }
+
     if (operand.slice(-1) === '.') {
         isFloat = false;
     }
+
     display.innerHTML = operand.slice(0, display.innerHTML.length - 1);
 }
 
@@ -61,6 +94,7 @@ function handleOperator(event) {
     if (prevOperand.length > 0) {
         evaluate(event);
     }
+
     resetSelection();
     event.target.classList.add('selected');
     operation = event.target.innerHTML;
@@ -74,9 +108,11 @@ function handleOperand(event) {
     if (isLastInputOperation) {
         clearScreen();
     }
+
     if (display.innerHTML.length > 7) {
         return;
     }
+
     const operand = event.target.innerHTML;
     if (isFloat && operand === '.') return;
     if (operand == '.') isFloat = true;
