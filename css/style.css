@@ -78,12 +78,12 @@
                          "zr zr . eq";
 }
 
-#eq {
+#key-eq {
     grid-area: eq;
     background-color: darkseagreen;
 }
 
-#zr {
+#key-zr {
     grid-area: zr;
 }
 
