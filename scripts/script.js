@@ -32,16 +32,26 @@ function deleteAll(event) {
     prevOperand = '';
     isLastInputOperation = false;
     display.innerHTML = '';
+    resetSelection();
 }
 
 // delete last char
 function deleteLast(event) {
     if (isLastInputOperation) operation = '';
     let operand = display.innerHTML;
+    if (operand.length === 1 || (operand.length == 2 && operand.charAt(0) == '-')) {
+        deleteAll();
+        return;
+    }
     if (operand.slice(-1) === '.') {
         isFloat = false;
     }
     display.innerHTML = operand.slice(0, display.innerHTML.length - 1);
+}
+
+// resets operator selection colors
+function resetSelection() {
+    operations.forEach(operation => operation.classList.remove('selected'));
 }
 
 
@@ -51,8 +61,10 @@ function handleOperator(event) {
     if (prevOperand.length > 0) {
         evaluate(event);
     }
-    prevOperand = display.innerHTML;
+    resetSelection();
+    event.target.classList.add('selected');
     operation = event.target.innerHTML;
+    prevOperand = display.innerHTML;
     isLastInputOperation = true;
 }
 
@@ -61,6 +73,9 @@ function handleOperator(event) {
 function handleOperand(event) {
     if (isLastInputOperation) {
         clearScreen();
+    }
+    if (display.innerHTML.length > 7) {
+        return;
     }
     const operand = event.target.innerHTML;
     if (isFloat && operand === '.') return;
@@ -81,6 +96,7 @@ function evaluate(event) {
     isFloat = isInt(result)? false : true;
     display.innerHTML = `${result ?? ''}`;
     prevOperand = '';
+    resetSelection();
 }
 
 // Decimal point checker
