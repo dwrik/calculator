@@ -1,4 +1,11 @@
-// useful variables
+
+// global constants
+
+const OVERFLOW = 'Overflow';
+const MAX_VALUE = 999_999_999_999_999;
+const MAX_DIGITS = 15;
+
+// global variables
 
 let operation = '';
 let prevOperand = '';
@@ -42,8 +49,10 @@ function handleKey(event) {
         case 'c':     keyID = 'clr'; break;
         case 'a':     keyID = 'acl'; break;
         case '0':     keyID = 'zr';  break;
+
         case '=':
         case 'Enter': keyID = 'eq';  break;
+
         default:      keyID = key;
     }
 
@@ -57,20 +66,22 @@ function handleKey(event) {
 
 // clear all
 function deleteAll(event) {
-    operation = '';
     isFloat = false;
     prevOperand = '';
     isLastInputOperation = false;
     display.innerHTML = '';
-    resetSelection();
+    resetOperation();
 }
 
 // delete last char
 function deleteLast(event) {
-    if (isLastInputOperation) operation = '';
+    if (isLastInputOperation) {
+        resetOperation();
+    }
 
     let operand = display.innerHTML;
-    if (operand.length === 1 || (operand.length == 2 && operand.charAt(0) == '-')) {
+    if (operand.length === 1 || operand === OVERFLOW
+        || operand.length === 2 && operand.charAt(0) === '-') {
         deleteAll();
         return;
     }
@@ -82,12 +93,6 @@ function deleteLast(event) {
     display.innerHTML = operand.slice(0, display.innerHTML.length - 1);
 }
 
-// resets operator selection colors
-function resetSelection() {
-    operations.forEach(operation => operation.classList.remove('selected'));
-}
-
-
 // sets operation and handles
 // prev operation if it exists
 function handleOperator(event) {
@@ -95,7 +100,11 @@ function handleOperator(event) {
         evaluate(event);
     }
 
-    resetSelection();
+    if (display.innerHTML === OVERFLOW) {
+        return;
+    }
+
+    resetOperation();
     event.target.classList.add('selected');
     operation = event.target.innerHTML;
     prevOperand = display.innerHTML;
@@ -109,7 +118,8 @@ function handleOperand(event) {
         clearScreen();
     }
 
-    if (display.innerHTML.length > 7) {
+    // prevents overflow & NaN bugs
+    if (display.innerHTML.length >= MAX_DIGITS || display.innerHTML === OVERFLOW) {
         return;
     }
 
@@ -129,10 +139,28 @@ function evaluate(event) {
         Number(prevOperand),
         Number(currOperand));
 
+    // div by zero
+    let displayText = result;
+    if (result === null) {
+        displayText = '';
+    }
+
+    // overflow
+    if (result > MAX_VALUE) {
+        console.log(result);
+        displayText = OVERFLOW;
+    }
+
     isFloat = isInt(result)? false : true;
-    display.innerHTML = `${result ?? ''}`;
+    display.innerHTML = `${displayText}`;
     prevOperand = '';
-    resetSelection();
+    resetOperation();
+}
+
+// resets operator selection colors
+function resetOperation() {
+    operation = '';
+    operations.forEach(operation => operation.classList.remove('selected'));
 }
 
 // Decimal point checker
@@ -147,7 +175,6 @@ function clearScreen() {
     isLastInputOperation = false;
     display.innerHTML = '';
 }
-
 
 // rounds to 3 places
 function round(num) {
@@ -171,7 +198,7 @@ function multiply(a, b) {
 function divide(a, b) {
     if (b === 0) {
         alert('You can\'t divide by 0!');
-        return;
+        return null;
     }
     return round(a / b);
 }
