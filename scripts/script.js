@@ -9,8 +9,9 @@ const MAX_DIGITS = 15;
 
 let operation = '';
 let prevOperand = '';
-let isFloat = false;
 let isLastInputOperation = false;
+let isResult = false;
+let isFloat = false;
 
 // display node
 const display = document.querySelector('#display');
@@ -67,6 +68,7 @@ function handleKey(event) {
 // clear all
 function deleteAll(event) {
     isFloat = false;
+    isResult = false;
     prevOperand = '';
     isLastInputOperation = false;
     display.innerHTML = '';
@@ -80,7 +82,7 @@ function deleteLast(event) {
     }
 
     let operand = display.innerHTML;
-    if (operand.length === 1 || operand === OVERFLOW
+    if (operand.length === 1 || operand === OVERFLOW || isResult
         || operand.length === 2 && operand.charAt(0) === '-') {
         deleteAll();
         return;
@@ -109,6 +111,7 @@ function handleOperator(event) {
     operation = event.target.innerHTML;
     prevOperand = display.innerHTML;
     isLastInputOperation = true;
+    isResult = false;
 }
 
 // handles number/dot input
@@ -116,6 +119,10 @@ function handleOperator(event) {
 function handleOperand(event) {
     if (isLastInputOperation) {
         clearScreen();
+    }
+
+    if (isResult) {
+        deleteAll(0);
     }
 
     // prevents overflow & NaN bugs
@@ -153,8 +160,9 @@ function evaluate(event) {
 
     isFloat = isInt(result)? false : true;
     display.innerHTML = `${displayText}`;
-    prevOperand = '';
     resetOperation();
+    prevOperand = '';
+    isResult = true;
 }
 
 // resets operator selection colors
